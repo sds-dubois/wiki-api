@@ -68,6 +68,35 @@ class WikiApi(object):
             results.append(slug[0])
         return results
 
+    def find_titles(self, terms):
+        search_params = {
+            'action': 'query', #'opensearch',
+            'srinfo': 'suggestion',
+            'list': 'search',
+            'srsearch': terms,
+            'format': 'xml'
+        }
+
+        url = "{scheme}://{locale_sub}.{hostname_path}".format(
+            scheme=uri_scheme,
+            locale_sub=self.options['locale'],
+            hostname_path=api_uri
+        )
+        resp = self.get(url, search_params)
+        logger.debug('find "%s" response: %s', terms, resp)
+
+        # parse search results
+        xmldoc = minidom.parseString(resp)
+        items = xmldoc.getElementsByTagName('p')
+
+        # return results as wiki page titles
+        results = []
+        for item in items:
+            title = item.attributes['title'].value
+            title = (title.replace(' ','_')).encode('UTF-8')
+            results.append(title)
+        return results
+
     def get_article(self, title):
         url = '{scheme}://{locale_sub}.{hostname_path}{article_title}'.format(
             scheme=uri_scheme,
