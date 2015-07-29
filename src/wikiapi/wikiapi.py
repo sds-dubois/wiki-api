@@ -127,6 +127,36 @@ class WikiApi(object):
             results.append(cat)
         return results
 
+    def find_related_articles(self,category,limit='5'):
+        # search articles from category
+
+        search_params = {
+            'action': 'query',
+            'list': 'categorymembers',
+            'cmtitle': category, #('Category:' + category),
+            'cmlimit': limit,
+            'format': 'xml'
+        }
+
+        url = "{scheme}://{locale_sub}.{hostname_path}".format(
+            scheme=uri_scheme,
+            locale_sub=self.options['locale'],
+            hostname_path=api_uri
+        )
+        resp = self.get(url, search_params)
+
+        # parse search results
+        xmldoc = minidom.parseString(resp)
+        items = xmldoc.getElementsByTagName('cm')
+
+        # return results as wiki page titles
+        results = []
+        for item in items:
+            title = item.attributes['title'].value
+            title = (title.replace(' ','_')).encode('UTF-8')
+            results.append(title)
+        return results
+
     def get_article(self, title):
         url = '{scheme}://{locale_sub}.{hostname_path}{article_title}'.format(
             scheme=uri_scheme,
