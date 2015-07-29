@@ -105,6 +105,7 @@ class WikiApi(object):
             'titles': title,
             'prop': 'categories',
             'cllimit': limit,
+            'clshow': '!hidden',
             'format': 'xml'
         }
 
@@ -133,7 +134,7 @@ class WikiApi(object):
         search_params = {
             'action': 'query',
             'list': 'categorymembers',
-            'cmtitle': category, #('Category:' + category),
+            'cmtitle': category,
             'cmlimit': limit,
             'format': 'xml'
         }
