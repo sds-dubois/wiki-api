@@ -97,6 +97,36 @@ class WikiApi(object):
             results.append(title)
         return results
 
+    def find_related_categories(self,title,limit='10'):
+        # search related categories
+
+        search_params = {
+            'action': 'query',
+            'titles': title,
+            'prop': 'categories',
+            'cllimit': limit,
+            'format': 'xml'
+        }
+
+        url = "{scheme}://{locale_sub}.{hostname_path}".format(
+            scheme=uri_scheme,
+            locale_sub=self.options['locale'],
+            hostname_path=api_uri
+        )
+        resp = self.get(url, search_params)
+
+        # parse search results
+        xmldoc = minidom.parseString(resp)
+        items = xmldoc.getElementsByTagName('cl')
+
+        # return results as wiki page titles
+        results = []
+        for item in items:
+            cat = item.attributes['title'].value
+            cat = (cat.replace(' ','_')).encode('UTF-8')
+            results.append(cat)
+        return results
+
     def get_article(self, title):
         url = '{scheme}://{locale_sub}.{hostname_path}{article_title}'.format(
             scheme=uri_scheme,
