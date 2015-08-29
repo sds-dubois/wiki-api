@@ -68,12 +68,13 @@ class WikiApi(object):
             results.append(slug[0])
         return results
 
-    def find_titles(self, terms):
+    def find_titles(self, terms,limit='10'):
+        # API doc : https://www.mediawiki.org/wiki/API:Search
         search_params = {
-            'action': 'query', #'opensearch',
-            'srinfo': 'suggestion',
+            'action': 'query',
             'list': 'search',
             'srsearch': terms,
+            'srlimit': limit,
             'format': 'xml'
         }
 
@@ -93,13 +94,13 @@ class WikiApi(object):
         results = []
         for item in items:
             title = item.attributes['title'].value
-            title = (title.replace(' ','_')).encode('UTF-8')
+            title = title.replace(' ','_')
             results.append(title)
         return results
 
     def find_related_categories(self,title,limit='10'):
         # search related categories
-
+        # API doc : https://www.mediawiki.org/wiki/API:Query
         search_params = {
             'action': 'query',
             'titles': title,
@@ -124,13 +125,13 @@ class WikiApi(object):
         results = []
         for item in items:
             cat = item.attributes['title'].value
-            cat = (cat.replace(' ','_')).encode('UTF-8')
+            cat = cat.replace(' ','_')
             results.append(cat)
         return results
 
-    def find_related_articles(self,category,limit='5'):
+    def find_related_articles(self,category,limit='10'):
         # search articles from category
-
+        # API doc : https://www.mediawiki.org/wiki/API:Query
         search_params = {
             'action': 'query',
             'list': 'categorymembers',
@@ -154,7 +155,7 @@ class WikiApi(object):
         results = []
         for item in items:
             title = item.attributes['title'].value
-            title = (title.replace(' ','_')).encode('UTF-8')
+            title = title.replace(' ','_')
             results.append(title)
         return results
 
