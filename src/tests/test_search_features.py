@@ -3,14 +3,12 @@ from wikiapi import WikiApi
 def main(term):
 	wiki = WikiApi()
 
-	print 'Old find for:',term
-	results = wiki.find(term)
-	print(len(results))
-	print(results)
+	# print 'Old find for:',term
+	# results = wiki.find(term)
+	# print results,'\n'
 
-	print '\nTest find_titles for:',term
+	print 'Test find_titles for:',term
 	results1 = wiki.find_titles(term)
-	print(len(results1))
 	print(results1)
 
 	title = results1[0]
