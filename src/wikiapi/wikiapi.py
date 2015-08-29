@@ -129,7 +129,7 @@ class WikiApi(object):
             results.append(cat)
         return results
 
-    def find_related_articles(self,category,limit='10'):
+    def find_related_titles(self,category,limit='10'):
         # search articles from category
         # API doc : https://www.mediawiki.org/wiki/API:Query
         search_params = {

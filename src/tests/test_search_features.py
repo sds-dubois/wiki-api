@@ -19,8 +19,8 @@ def main(term):
 	print(results2)
 
 	cat = results2[0]
-	print '\nTest find_related_articles for:', cat
-	results3 = wiki.find_related_articles(cat)
+	print '\nTest find_related_titles for:', cat
+	results3 = wiki.find_related_titles(cat)
 	print(results3)
 
 
