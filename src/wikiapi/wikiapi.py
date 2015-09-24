@@ -3,6 +3,7 @@ import logging
 import os
 import re
 from xml.dom import minidom
+from urllib import quote, unquote
 
 import requests
 from bs4 import BeautifulSoup
@@ -94,7 +95,8 @@ class WikiApi(object):
         results = []
         for item in items:
             title = item.attributes['title'].value
-            title = title.replace(' ','_')
+            title = title.replace(' ','_').encode('utf-8')
+            title = quote(title)
             results.append(title)
         return results
 
@@ -103,7 +105,7 @@ class WikiApi(object):
         # API doc : https://www.mediawiki.org/wiki/API:Query
         search_params = {
             'action': 'query',
-            'titles': title,
+            'titles': unquote(title),
             'prop': 'categories',
             'cllimit': limit,
             'clshow': '!hidden',

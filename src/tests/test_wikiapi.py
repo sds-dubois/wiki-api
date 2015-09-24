@@ -17,7 +17,7 @@ class TestWiki(object):
     @pytest.fixture(scope='function')
     def set_up(self):
         wiki = WikiApi()
-        results = wiki.find('Bill Clinton')
+        results = wiki.find_titles('Bill Clinton')
         article = wiki.get_article(results[0])
         return {
             'wiki': wiki,
@@ -31,8 +31,16 @@ class TestWiki(object):
     def test_image(self, set_up):
         assert_url_valid(url=set_up['article'].image)
 
+    def test_categories(self, set_up):
+        categories = set_up['wiki'].find_related_categories('Bill_Clinton')
+        cat = categories[1]
+        related_article = set_up['wiki'].find_related_titles(cat)
+
+        assert cat == 'Category:20th-century_American_politicians'
+        assert related_article[1] == 'Steve_Adubato'
+
     def test_summary(self, set_up):
-        results = set_up['wiki'].find('Tom Hanks')
+        results = set_up['wiki'].find_titles('Tom Hanks')
         article = set_up['wiki'].get_article(results[0])
 
         expected_summary_start = (
@@ -61,7 +69,7 @@ class TestWiki(object):
         )
 
     def test_get_relevant_article(self, set_up):
-        keywords = ['president', 'hilary']
+        keywords = ['Breyer', 'hilary']
         _article = set_up['wiki'].get_relevant_article(
             set_up['results'], keywords)
 
@@ -116,11 +124,11 @@ class TestCache(object):
 
         assert self._get_cache_size(wiki) == 0
         # Make multiple calls to ensure no duplicate cache items created
-        assert wiki.find('Bob Marley') == wiki.find('Bob Marley')
+        assert wiki.find_titles('Bob Marley') == wiki.find_titles('Bob Marley')
         assert self._get_cache_size(wiki) == 1
 
         # Check cache keys are unique
-        assert wiki.find('Tom Hanks') != wiki.find('Bob Marley')
+        assert wiki.find_titles('Tom Hanks') != wiki.find_titles('Bob Marley')
 
         assert self._get_cache_size(wiki) == 2
         shutil.rmtree(wiki.cache_dir, ignore_errors=True)
@@ -130,7 +138,7 @@ class TestCache(object):
         wiki = WikiApi({'cache': False})
 
         assert self._get_cache_size(wiki) == 0
-        wiki.find('Bob Marley')
+        wiki.find_titles('Bob Marley')
         assert self._get_cache_size(wiki) == 0
         shutil.rmtree(wiki.cache_dir, ignore_errors=True)
 
@@ -141,7 +149,7 @@ class TestUnicode(object):
     def set_up(self):
         # using an Italian-Emilian locale that is full of unicode symbols
         wiki = WikiApi({'locale': 'eml'})
-        result = wiki.find('Bulaggna')[0]
+        result = wiki.find_titles('Bulaggna')[0]
         return {
             'wiki': wiki,
             'result': result,
